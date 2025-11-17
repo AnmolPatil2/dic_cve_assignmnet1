@@ -23,7 +23,10 @@ dic_cve_assignmnet1/
 │   ├── 03_Gold_Analysis.py          
 │   └── 03_Gold_Analysis.sql         
 │
-├── Screenshots/                      # Analysis visualizations
+├── Screenshots/                      # Execution proofs (PDFs) and visualizations (PNGs)
+│   ├── 01_Bronze_Ingestion_proof.pdf
+│   ├── 02_Silver_Normalization_proof.pdf
+│   ├── 03_Exploratory_Analysis_ricks.pdf
 │   ├── 3rd_analysis.png              # Monthly publication patterns
 │   ├── 4th_analysis.png              # CVSS risk distribution (pie chart)
 │   ├── 5th_analysis.png              # Top 25 vendors (bar chart)
@@ -31,10 +34,7 @@ dic_cve_assignmnet1/
 │   ├── 7th_analysis.png              # Market concentration analysis
 │   └── 8th_analysis.png              # Monthly trends with CVSS scores
 │
-└── ipynb_for_clear_understanding/   # Execution proofs with full outputs
-    ├── 01_Bronze_Ingestion_proof.pdf
-    ├── 02_Silver_Normalization_proof.pdf
-    └── 03_Exploratory_Analysis_ricks.pdf
+└── ipynb_for_clear_understanding/   # Jupyter notebooks for reference
 ```
 
 ---
@@ -165,19 +165,11 @@ SELECT COUNT(*) FROM cve_silver.affected_products; -- Returns: 50,000+
 
 ---
 
-## Visualizations & Proofs
+## Documentation
 
-### Screenshots Folder
-Contains 6 analysis visualizations showing:
-- Monthly trends (line charts)
-- Risk distribution (pie charts)
-- Vendor rankings (bar charts)
-- Market concentration analysis
+### Execution Proof PDFs (in Screenshots/ folder)
 
-**View:** Check `Screenshots/` folder for all charts
-
-### Execution Proof PDFs
-Contains complete notebook outputs with all code, results, and visualizations:
+Complete notebook outputs showing all code, results, and visualizations:
 
 - **`01_Bronze_Ingestion_proof.pdf`**  
   Shows data ingestion, filtering, quality checks, and Bronze table creation
@@ -188,7 +180,15 @@ Contains complete notebook outputs with all code, results, and visualizations:
 - **`03_Exploratory_Analysis_ricks.pdf`**  
   Shows all 9 analytical queries with results, charts, and insights
 
-**View:** Check `ipynb_for_clear_understanding/` folder for full execution proofs
+### Analysis Visualizations (in Screenshots/ folder)
+
+6 PNG images showing key analysis results:
+- Monthly publication patterns (line chart)
+- CVSS risk distribution (pie chart)
+- Top 25 vendors by vulnerability count (bar chart)
+- CVE state distribution (Published vs Rejected)
+- Market concentration analysis
+- Monthly trends with average CVSS scores
 
 ---
 
