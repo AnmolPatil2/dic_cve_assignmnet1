@@ -4,31 +4,32 @@
 
 A cybersecurity data lakehouse analyzing **32,924 CVE records from 2024** using Databricks and Delta Lake. Implements the Medallion Architecture (Bronze → Silver → Gold) for vulnerability intelligence.
 
-**Course:** DIC 587 - Data Intensive Computing  
-**Assignment:** CVE Lakehouse Implementation  
-**Fall 2025**
+**Course:** DIC 587 - Data Intensive Computing | Fall 2025
 
 ---
 
 ## Project Structure
 ```
-cve-lakehouse-project/
+dic_cve_assignmnet1/
 │
 ├── README.md
 │
+├── data/
+│   └── 2024_parquet.parquet          # CVE 2024 source data
+│
 ├── source_code_as_per_submission/
-│   ├── 01_Bronze_Layer.py           # Bronze layer ingestion (~2-3 min runtime)
-│   ├── 02_Silver_Normalization.py   # Silver layer transformations (~1-2 min runtime)
-│   ├── 03_Gold_Analysis.py          # Gold layer analytics - Python version
-│   └── 03_Gold_Analysis.sql         # Gold layer analytics - SQL version
+│   ├── 01_Bronze_Layer.py           
+│   ├── 02_Silver_Normalization.py   
+│   ├── 03_Gold_Analysis.py          
+│   └── 03_Gold_Analysis.sql         
 │
 ├── Screenshots/
-│   ├── 3rd_analysis.png             # Monthly publication patterns
-│   ├── 4th_analysis.png             # CVSS risk distribution
-│   ├── 5th_analysis.png             # Top 25 vendors by vulnerability count
-│   ├── 6th_analysis.png             # CVE state distribution
-│   ├── 7th_analysis.png             # Market concentration analysis
-│   └── 8th_analysis.png             # Monthly trends with CVSS scores
+│   ├── 3rd_analysis.png             
+│   ├── 4th_analysis.png             
+│   ├── 5th_analysis.png             
+│   ├── 6th_analysis.png             
+│   ├── 7th_analysis.png             
+│   └── 8th_analysis.png             
 │
 └── ipynb_for_clear_understanding/
     ├── 01_Bronze_Ingestion_proof.pdf
@@ -38,118 +39,95 @@ cve-lakehouse-project/
 
 ---
 
-## Quick Setup Instructions
+## How to Run
 
-### Step 1: Databricks Environment Setup (5 minutes)
+### Step 1: Setup Databricks
 
-1. **Create Databricks Community Edition Account:**
-   - Go to https://community.cloud.databricks.com/
-   - Sign up with Google account (2FA required)
-
-2. **Create Volume:**
+1. Create account at https://community.cloud.databricks.com/
+2. Create volume:
 ```sql
    CREATE VOLUME workspace.default.cve_lakehouse_data;
 ```
+3. Upload `data/2024_parquet.parquet` to:  
+   `/Volumes/workspace/default/cve_lakehouse_data/2024_parquet.parquet`
 
-3. **Upload CVE Data:**
-   - Upload `2024_parquet.parquet` to `/Volumes/workspace/default/cve_lakehouse_data/`
+---
 
-### Step 2: Run the Pipeline
+### Step 2: Import Notebooks
 
-#### Bronze Layer (Runtime: ~2-3 minutes)
+1. In Databricks, go to **Workspace**
+2. Right-click → **Import**
+3. Import all files from `source_code_as_per_submission/`
 
-**File:** `01_Bronze_Layer.py`
+---
+
+### Step 3: Execute Pipeline
+
+#### 🥉 Bronze Layer (`01_Bronze_Layer.py`)
+
+**Runtime:** ~2-3 minutes
 
 **What it does:**
-- Reads 2024 CVE data from Parquet
-- Filters to 2024 records by publication date
-- Performs data quality checks (count, nulls, uniqueness)
-- Writes to Delta table: `cve_bronze.records`
+- Reads Parquet file
+- Filters to 2024 CVEs
+- Creates `cve_bronze.records` table (32,924 records)
 
-**Output:**
-- 32,924 CVE records in Bronze layer
-- Table: `cve_bronze.records`
+**Run:** Click "Run All"
 
-**Run:**
-```python
-# Import notebook or copy code cells sequentially
-# All configuration is in Cell 1
+**Verify:**
+```sql
+SELECT COUNT(*) FROM cve_bronze.records;  -- Should return 32,924
 ```
 
 ---
 
-#### Silver Layer (Runtime: ~1-2 minutes)
+#### 🥈 Silver Layer (`02_Silver_Normalization.py`)
 
-**File:** `02_Silver_Normalization.py`
+**Runtime:** ~1-2 minutes
 
 **What it does:**
-- Extracts core CVE fields (ID, dates, CVSS scores, descriptions)
-- Handles multiple CVSS versions (v3.1, v3.0, v2.0)
-- **Explodes** nested vendor/product arrays into relational tables
-- Creates normalized tables
+- Normalizes CVE data
+- Extracts core fields (dates, CVSS, descriptions)
+- Explodes vendor/product arrays
+- Creates 2 tables:
+  - `cve_silver.core` (32,924 records)
+  - `cve_silver.affected_products` (50,000+ records)
 
-**Output:**
-- `cve_silver.core` - 32,924 normalized CVE records
-- `cve_silver.affected_products` - 50,000+ vendor/product combinations
+**Run:** Click "Run All"
 
-**Run:**
-```python
-# Requires: Bronze layer completed
-# Run all cells in sequence
+**Verify:**
+```sql
+SELECT COUNT(*) FROM cve_silver.core;              -- 32,924
+SELECT COUNT(*) FROM cve_silver.affected_products; -- 50,000+
 ```
 
 ---
 
-#### Gold Layer (Runtime: <1 minute)
+#### 🥇 Gold Layer (`03_Gold_Analysis.py` or `.sql`)
 
-**Files:** `03_Gold_Analysis.py` OR `03_Gold_Analysis.sql`
+**Runtime:** <1 minute per query
 
 **What it does:**
-- 9 analytical queries for security intelligence:
+- 9 analytical queries:
   1. Yearly CVE trends
-  2. Publication latency analysis
-  3. Monthly publication patterns
+  2. Publication latency
+  3. Monthly patterns
   4. CVSS risk distribution
   5. Top 25 vendors
   6. CVE state distribution
   7. Market concentration
   8. Monthly trends with CVSS
-  9. Seasonal vulnerability patterns
+  9. Seasonal patterns
 
-**Output:**
-- Interactive visualizations (use Databricks built-in charts)
-- Security insights and trends
-
-**Run:**
-```python
-# Requires: Silver layer completed
-# Run each analysis cell independently
-# Use display() for visualizations
-```
+**Run:** Execute cells individually, use chart icons for visualizations
 
 ---
 
-## Architecture Details
+## Architecture
 
-### Bronze Layer
-- **Purpose:** Raw data ingestion
-- **Input:** CVE v5 JSON in Parquet format
-- **Output:** `cve_bronze.records` (Delta table)
-- **Key Operations:** Filter to 2024, data quality checks
-
-### Silver Layer
-- **Purpose:** Data normalization and cleaning
-- **Input:** `cve_bronze.records`
-- **Output:** 
-  - `cve_silver.core` (one row per CVE)
-  - `cve_silver.affected_products` (exploded vendor/product data)
-- **Key Operations:** JSON parsing, explode arrays, CVSS coalesce
-
-### Gold Layer
-- **Purpose:** Business intelligence and analytics
-- **Input:** Silver layer tables
-- **Output:** Analytical queries and visualizations
-- **Key Operations:** Aggregations, temporal analysis, risk assessment
+- **Bronze:** Raw data ingestion (JSON → Delta)
+- **Silver:** Normalized tables (core CVE + exploded products)
+- **Gold:** Business analytics (9 security intelligence queries)
 
 ---
 
@@ -157,103 +135,41 @@ cve-lakehouse-project/
 
 | Metric | Value |
 |--------|-------|
-| Total CVE Records (2024) | 32,924 |
+| CVE Records (2024) | 32,924 |
 | Unique Vendors | 1,500+ |
-| Vendor/Product Combinations | 50,000+ |
+| Vendor/Product Combos | 50,000+ |
 | CVEs with CVSS Scores | 85%+ |
-| Avg Products per CVE | ~1.5 |
 
 ---
 
-## Data Quality Checks
+## Technologies
 
-### Bronze Layer
-- ✅ Count >= 30,000 records
-- ✅ No null CVE IDs
-- ✅ All CVE IDs unique
-- ✅ All records from 2024
-
-### Silver Layer
-- ✅ Core table has one row per CVE
-- ✅ CVSS scores properly coalesced from multiple versions
-- ✅ Affected products successfully exploded
-- ✅ Proper foreign key relationships maintained
-
----
-
-## Technologies Used
-
-- **Platform:** Databricks Community Edition (DBR 13.x+)
-- **Processing:** Apache Spark / PySpark
-- **Storage:** Delta Lake (ACID transactions)
-- **Languages:** Python, SQL
-- **Architecture:** Medallion (Bronze → Silver → Gold)
-
----
-
-## Visualizations
-
-All visualizations are available in the `Screenshots/` folder:
-
-1. **Monthly Publication Patterns** - Line chart showing CVE publication trends
-2. **CVSS Risk Distribution** - Pie chart of severity levels
-3. **Top 25 Vendors** - Horizontal bar chart of vulnerability counts
-4. **CVE State Distribution** - Pie chart of Published vs Rejected
-5. **Market Concentration** - Analysis of top vendor dominance
-6. **Seasonal Patterns** - CVE distribution by season
-
----
-
-## Execution Proof
-
-Full execution outputs with results are available as PDFs in `ipynb_for_clear_understanding/`:
-
-- `01_Bronze_Ingestion_proof.pdf` - Shows data ingestion and quality checks
-- `02_Silver_Normalization_proof.pdf` - Shows transformation and normalization
-- `03_Exploratory_Analysis_ricks.pdf` - Shows all analytical queries and insights
+- Databricks Community Edition (DBR 13.x+)
+- Apache Spark / PySpark
+- Delta Lake
+- Python & SQL
 
 ---
 
 ## Troubleshooting
 
-### Issue: Table not found
-**Solution:** Ensure you run notebooks in sequence (01 → 02 → 03)
+**"Table not found"**  
+→ Run notebooks in order: 01 → 02 → 03
 
-### Issue: Path not found
-**Solution:** Update paths in Cell 1 of each notebook to match your volume name
+**"Path not found"**  
+→ Verify parquet file uploaded to correct volume path
 
-### Issue: Out of memory
-**Solution:** Databricks Community Edition has limited resources; restart cluster if needed
-
----
-
-## Resume Highlights
-
-**What to include on your resume:**
-
-- Built Bronze, Silver, and Gold data layers using Medallion Architecture on Databricks
-- Processed 32,924+ CVE vulnerability records from 2024 using PySpark and Delta Lake
-- Implemented data normalization with explode operations on nested JSON structures
-- Created business intelligence dashboards for cybersecurity threat analysis
-- Demonstrated production-ready data engineering with ACID transactions and data quality checks
+**"Volume does not exist"**  
+→ Create volume first (see Step 1)
 
 ---
 
-## Contact
+## Repository
 
-**Author:** [Your Name]  
+**URL:** https://github.com/AnmolPatil2/dic_cve_assignmnet1  
 **Course:** DIC 587 - Data Intensive Computing  
-**Semester:** Fall 2025  
-**Institution:** [Your University]
+**Due Date:** November 16, 2025
 
 ---
 
-## Acknowledgments
-
-- CVE data from [CVEProject/cvelistV5](https://github.com/CVEProject/cvelistV5)
-- Databricks Community Edition for compute resources
-- Assignment designed by DIC 587 course instructors
-
----
-
-**Last Updated:** November 2025
+**Data Source:** [CVEProject/cvelistV5](https://github.com/CVEProject/cvelistV5)
