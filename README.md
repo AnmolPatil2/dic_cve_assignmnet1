@@ -17,7 +17,7 @@ dic_cve_assignmnet1/
 ├── data/
 │   └── 2024_parquet.parquet          # CVE 2024 source data
 │
-├── source_code_as_per_submission/
+├── source_code_as_per_submission/    # Python/SQL files for submission
 │   ├── 01_Bronze_Layer.py           
 │   ├── 02_Silver_Normalization.py   
 │   ├── 03_Gold_Analysis.py          
@@ -34,12 +34,25 @@ dic_cve_assignmnet1/
 │   ├── 7th_analysis.png              # Market concentration analysis
 │   └── 8th_analysis.png              # Monthly trends with CVSS scores
 │
-└── ipynb_for_clear_understanding/   # Jupyter notebooks for reference
+└── ipynb_for_clear_understanding/   # Jupyter notebooks (.ipynb) for all 3 layers
+    ├── 01_Bronze_Layer.ipynb
+    ├── 02_Silver_Normalization.ipynb
+    └── 03_Gold_Analysis.ipynb
 ```
 
 ---
 
 ## How to Run
+
+### Option 1: Using Python Files (Recommended for Databricks)
+
+Follow Step 1-3 below using files from `source_code_as_per_submission/`
+
+### Option 2: Using Jupyter Notebooks
+
+Import `.ipynb` files from `ipynb_for_clear_understanding/` folder instead
+
+---
 
 ### Step 1: Setup Databricks
 
@@ -57,13 +70,13 @@ dic_cve_assignmnet1/
 
 1. In Databricks, go to **Workspace**
 2. Right-click → **Import**
-3. Import all files from `source_code_as_per_submission/`
+3. Import files from `source_code_as_per_submission/` (or `ipynb_for_clear_understanding/` for notebook versions)
 
 ---
 
 ### Step 3: Execute Pipeline
 
-#### 🥉 Bronze Layer (`01_Bronze_Layer.py`)
+#### 🥉 Bronze Layer (`01_Bronze_Layer.py` or `.ipynb`)
 
 **Runtime:** ~2-3 minutes
 
@@ -84,7 +97,7 @@ SELECT COUNT(*) FROM cve_bronze.records;  -- Returns: 32,924
 
 ---
 
-#### 🥈 Silver Layer (`02_Silver_Normalization.py`)
+#### 🥈 Silver Layer (`02_Silver_Normalization.py` or `.ipynb`)
 
 **Runtime:** ~1-2 minutes
 
@@ -109,7 +122,7 @@ SELECT COUNT(*) FROM cve_silver.affected_products; -- Returns: 50,000+
 
 ---
 
-#### 🥇 Gold Layer (`03_Gold_Analysis.py` or `.sql`)
+#### 🥇 Gold Layer (`03_Gold_Analysis.py`, `.sql`, or `.ipynb`)
 
 **Runtime:** <1 minute per query
 
@@ -189,6 +202,13 @@ Complete notebook outputs showing all code, results, and visualizations:
 - CVE state distribution (Published vs Rejected)
 - Market concentration analysis
 - Monthly trends with average CVSS scores
+
+### Jupyter Notebooks (in ipynb_for_clear_understanding/ folder)
+
+Alternative notebook format (.ipynb) for all 3 pipeline layers:
+- `01_Bronze_Layer.ipynb`
+- `02_Silver_Normalization.ipynb`
+- `03_Gold_Analysis.ipynb`
 
 ---
 
